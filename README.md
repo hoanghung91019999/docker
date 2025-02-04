@@ -54,3 +54,9 @@ docker container stop <container ID> or <name>
 ```
 docker container top <name container>
 ps aux | grep <image>
+```
+- kiểm tra logs của container :
+```
+docker container logs <name contianer>
+```
+
