@@ -59,4 +59,43 @@ ps aux | grep <image>
 ```
 docker container logs <name contianer>
 ```
+#### image và container khác gì nhau
+- image là ứng dụng
+- container là processs khi chạy ứng dụng đó
+- có thể có nhiều container chạy cùng từ một image
+- image được lưu trên một kho chung gọi là registry
+
+#### moniter container
+- process list
+```
+docker container top <PID>
+```
+- xem file cấu hình của container
+```
+docker container inspect
+```
+- performance
+```
+docker container stats
+```
+#### container đang chạy những gì - vào shell của container
+- có thể vào shell của container để update, ping,...
+- có 2 cách để vào shell của container
+    + chạy mới container và vào shell: container chạy bash mặc định ( ubuntu, centos,..) , contaier chạy app (nginx,..) thì cần thêm command bash
+    ```
+    docker container run -it
+    docker container run -it < option> < image> bash
+    ```
+    + vào shell của container đang chạy
+    ```
+    docker container exec -it
+    docker container exec -it <name> bash
+    ```
+- COMMAND là lệnh khởi tạo đầu tiên khi chạy container.chính vì vậy với những image OS thì có thể vào bash shell luôn còn với app thì cần thêm command bash mới vào được shell
+- thoát terminal container
+  + exit : thoát terminal và tắt luôn container
+  + ctrl + PQ : thoát và không tắt container
+ 
+    
+
 
