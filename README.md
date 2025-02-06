@@ -95,7 +95,55 @@ docker container stats
 - thoát terminal container
   + exit : thoát terminal và tắt luôn container
   + ctrl + PQ : thoát và không tắt container
- 
-    
 
+ # Network trong docker
+- có 4 loại kết nối mạng trong docker :
+    + bridge ( mặc định ) : Khi tạo một container mà không chỉ định network, nó sẽ tự động gán vào bridge network mặc định.
+    + host : Loại bỏ lớp network isolation, container sẽ sử dụng mạng của host ( sử dụng luôn IP của host ).Thích hợp khi cần hiệu suất cao hoặc truy cập trực tiếp vào cổng mạng của máy chủ.tuy nhiên mạng này dễ bị xung đột port
+    + None : Container không có network (không có địa chỉ IP chỉ có loopback), thích hợp cho các ứng dụng không cần kết nối mạng.
+    + Overlay (Dành cho Docker Swarm) : Dùng để kết nối nhiều container trên các máy khác nhau trong một cụm Docker Swarm.Cho phép các container giao tiếp mà không cần NAT.
+    + Macvlan (IP Riêng) : Cho phép container có địa chỉ IP riêng trên mạng vật lý, giống như một máy thực.Thích hợp cho các ứng dụng yêu cầu giao tiếp trực tiếp với mạng ngoài.
+    ```
+    docker network create -d macvlan \
+    --subnet=192.168.1.0/24 \
+    --gateway=192.168.1.1 \
+    -o parent=eth0 my_macvlan
+    ```
+- đối với mạng bridge nếu kết nối ra ngoài cần NAT port
+- mỗi container được kết nối trực tiếp, ngang hàng với nhau
+- có thể tạo vitual network riêng cho mỗi lớp ứng dụng
+- một container có thể kết noois đến nhiều vitual network khác nhau
+- container cũng có thể kết nối trực tiếp với dải mạng của host
+- có nhiều loại ( driver ) vitual network cho những mục đích khác nhau
 
+- câu lệnh show network ;
+```
+docker network ls
+```
+- kiểm tra cấu hình :
+```
+docker network inspect <name or ID>
+```
+- tạo network :
+```
+docker network create <name network>
+docker network create --option <name network>
+```
+- kết nối network vào container:
+```
+docker network connect <name network> < container >
+docker network connect --help
+```
+- bỏ kết nối network vào container
+```
+docker network disconnect <name network> < container >
+```
+
+#### DNS trong docker network
+- container không nói chuyện với nhau bằng IP mà bằng tên ( --name )
+- DNS là chức năng có sẵn của hệ thống khi container được tạo ra và kết nối với custom network
+- sử dụng --network-alias để đặt tên alias cho một container
+    + nhiều container có thể đặt chung một alias nếu kết nối chung 1 mạng custom
+    + sử dụng một alias name cho một cụm contaier có chức năng giống nhau để cân bằng tải
+    + ví dụ khi ping tới alias name của 1 cụm container mỗi lần ping sẽ tới một container khác nhau để cân bằng tải
+# Image
