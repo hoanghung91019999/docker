@@ -184,26 +184,27 @@ docker image push <repo/name:version>
 ```
 docker rmi <name:tag>
 docker rmi -f <name:tag> ( buộc xóa khi container vẫn còn)
+```
 ### Tạo image
 #### docker file 
 - là file text chứa mô tả tuần tự để tạo ra image. nói cách khác nó chứa các image layer
 - Khi bạn chạy lệnh docker build, Docker sẽ kiểm tra từng bước (RUN, COPY, CMD,...) trong Dockerfile và lưu cache cho mỗi bước.
 - Nếu nội dung một bước không thay đổi, Docker sử dụng lại cache thay vì chạy lại lệnh đó.
 - Nếu một bước thay đổi, Docker bỏ cache từ bước đó trở đi và build lại từ đầu.
-|Lệnh     |	Ý nghĩa    |
-|:-------|:------------|
-|FROM	|Xác định base image (ví dụ: ubuntu, alpine, node).|
-|WORKDIR|	Đặt thư mục làm việc mặc định trong container.|
-|COPY	|Sao chép file từ thư mục hiện tại vào container.|
-|ADD|	Tương tự COPY, nhưng hỗ trợ tải file từ URL & giải nén file .tar.gz.|
-|RUN|	Chạy lệnh khi build image (thường dùng để cài đặt phần mềm).|
-|CMD|	Chạy lệnh mặc định khi container khởi động (chỉ chạy một lần duy nhất).|
-|ENTRYPOINT	|Tương tự CMD nhưng không bị ghi đè nếu có lệnh được truyền vào docker run.|
-|EXPOSE|	Mở cổng để container có thể nhận kết nối mạng.|
-|ENV|	Định nghĩa biến môi trường.|
-|VOLUME	|Tạo thư mục để lưu trữ dữ liệu bên ngoài container.|
-|ARG|	Định nghĩa biến chỉ sử dụng khi build (docker build --build-arg).|
-|LABEL	|Gán metadata cho image.|
+- |Lệnh  |	Ý nghĩa  |
+  |-------|------------|
+  |FROM	|Xác định base image (ví dụ: ubuntu, alpine, node).|
+  |WORKDIR|	Đặt thư mục làm việc mặc định trong container.|
+  |COPY	|Sao chép file từ thư mục hiện tại vào container.|
+  |ADD|	Tương tự COPY, nhưng hỗ trợ tải file từ URL & giải nén file .tar.gz.|
+  |RUN|	Chạy lệnh khi build image (thường dùng để cài đặt phần mềm).|
+  |CMD|	Chạy lệnh mặc định khi container khởi động (chỉ chạy một lần duy nhất).|
+  |ENTRYPOINT	|Tương tự CMD nhưng không bị ghi đè nếu có lệnh được truyền vào docker run.|
+  |EXPOSE|	Mở cổng để container có thể nhận kết nối mạng.|
+  |ENV|	Định nghĩa biến môi trường.|
+  |VOLUME	|Tạo thư mục để lưu trữ dữ liệu bên ngoài container.|
+  |ARG|	Định nghĩa biến chỉ sử dụng khi build (docker build --build-arg).|
+  |LABEL	|Gán metadata cho image.|
 
 - lưu ý khi build :
   + vì container chạy bằng quyền admin nên trong code không cần sudo
