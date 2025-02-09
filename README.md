@@ -161,7 +161,7 @@ docker network disconnect <name network> < container >
     + tiết kiệm bộ nhớ
     + tiết kiệm thời gian pull push
 - containeer là một layer của image
-- ![Uploading image.png…]()
+-  ![Uploading image.png…]()
 - kiểm bằng bằng :
 ```
 docker image inspect
@@ -190,6 +190,21 @@ docker rmi -f <name:tag> ( buộc xóa khi container vẫn còn)
 - Khi bạn chạy lệnh docker build, Docker sẽ kiểm tra từng bước (RUN, COPY, CMD,...) trong Dockerfile và lưu cache cho mỗi bước.
 - Nếu nội dung một bước không thay đổi, Docker sử dụng lại cache thay vì chạy lại lệnh đó.
 - Nếu một bước thay đổi, Docker bỏ cache từ bước đó trở đi và build lại từ đầu.
+|Lệnh     |	Ý nghĩa    |
+|:-------|:------------|
+|FROM	|Xác định base image (ví dụ: ubuntu, alpine, node).|
+|WORKDIR|	Đặt thư mục làm việc mặc định trong container.|
+|COPY	|Sao chép file từ thư mục hiện tại vào container.|
+|ADD|	Tương tự COPY, nhưng hỗ trợ tải file từ URL & giải nén file .tar.gz.|
+|RUN|	Chạy lệnh khi build image (thường dùng để cài đặt phần mềm).|
+|CMD|	Chạy lệnh mặc định khi container khởi động (chỉ chạy một lần duy nhất).|
+|ENTRYPOINT	|Tương tự CMD nhưng không bị ghi đè nếu có lệnh được truyền vào docker run.|
+|EXPOSE|	Mở cổng để container có thể nhận kết nối mạng.|
+|ENV|	Định nghĩa biến môi trường.|
+|VOLUME	|Tạo thư mục để lưu trữ dữ liệu bên ngoài container.|
+|ARG|	Định nghĩa biến chỉ sử dụng khi build (docker build --build-arg).|
+|LABEL	|Gán metadata cho image.|
+
 - lưu ý khi build :
   + vì container chạy bằng quyền admin nên trong code không cần sudo
   + firewall-cmd là lệnh quản lý firewalld, nhưng container thường không chạy dịch vụ nên khi chạy hay báo lỗi nên loại bỏ.
