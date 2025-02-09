@@ -147,3 +147,49 @@ docker network disconnect <name network> < container >
     + sử dụng một alias name cho một cụm contaier có chức năng giống nhau để cân bằng tải
     + ví dụ khi ping tới alias name của 1 cụm container mỗi lần ping sẽ tới một container khác nhau để cân bằng tải
 # Image
+#### sơ bộ về docker image
+- là bản đóng gói của ứng dụng đang chạy bao gồm appbinary và dependency
+- metadata về việc khởi tạo một container
+- không phải là một OS image, chỉ bao gồm các thành phần cần thieets để chạy ứng dụng
+- lưu trữ và chỉ sẻ sử dụng image qua registry
+- image được tạo thành từ dockerfile
+#### có những gì bên trong image
+- imgae được tạo thành bởi nhiều layers
+- ![image](https://github.com/user-attachments/assets/15b51319-b875-4784-94af-6099a2d8c32f)
+
+- mỗi layer chỉ được lưu một lần trên host
+    + tiết kiệm bộ nhớ
+    + tiết kiệm thời gian pull push
+- containeer là một layer của image
+- ![Uploading image.png…]()
+- kiểm bằng bằng :
+```
+docker image inspect
+docker image history
+```
+#### cách sử dụng image tag và docker hub
+- đăng nhập trên docker hub và tạo repo
+- đánh tag cho image
+```
+docker login
+docker imgae tag <tên imgae > < name mới >
+```
+- push lên docker hub
+```
+docker image push
+** đánh tag version **
+docker image push <repo/name:version>
+```
+- xóa image
+```
+docker rmi <name:tag>
+docker rmi -f <name:tag> ( buộc xóa khi container vẫn còn)
+### Tạo image
+#### docker file 
+- là file text chứa mô tả tuần tự để tạo ra image. nói cách khác nó chứa các image layer
+- Khi bạn chạy lệnh docker build, Docker sẽ kiểm tra từng bước (RUN, COPY, CMD,...) trong Dockerfile và lưu cache cho mỗi bước.
+- Nếu nội dung một bước không thay đổi, Docker sử dụng lại cache thay vì chạy lại lệnh đó.
+- Nếu một bước thay đổi, Docker bỏ cache từ bước đó trở đi và build lại từ đầu.
+- lưu ý khi build :
+  + vì container chạy bằng quyền admin nên trong code không cần sudo
+  + firewall-cmd là lệnh quản lý firewalld, nhưng container thường không chạy dịch vụ nên khi chạy hay báo lỗi nên loại bỏ.
