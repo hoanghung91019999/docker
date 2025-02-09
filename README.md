@@ -207,5 +207,6 @@ docker rmi -f <name:tag> ( buộc xóa khi container vẫn còn)
   |LABEL	|Gán metadata cho image.|
 
 - lưu ý khi build :
+  + sắp xếp các layer hợp lý để tối ưu hóa cache khi build
   + vì container chạy bằng quyền admin nên trong code không cần sudo
   + firewall-cmd là lệnh quản lý firewalld, nhưng container thường không chạy dịch vụ nên khi chạy hay báo lỗi nên loại bỏ.
