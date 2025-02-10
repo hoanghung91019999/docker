@@ -256,3 +256,13 @@ docker container run -p 80:80 -d nginxapp
 docker exec - it <ID container > /bin/bash
 ```
 - kiểm tra trong thư mục làm việc các file đã được copy hay chưa,...vv
+- lưu ý : Nếu container chỉ hỗ trợ HTTP (80), bạn cần một proxy bên ngoài như Nginx hoặc Traefik để xử lý SSL. lúc này cần cấu hình khôi block trên nginx để sử lý traffix SSL tới service 
+    + Khi bạn có nhiều container chạy trên cùng một server
+    + Khi bạn muốn bật HTTPS nhưng ứng dụng chỉ hỗ trợ HTTP
+    + Khi bạn muốn load balancing (cân bằng tải)
+    + Khi bạn muốn bảo vệ backend và giấu cổng nội bộ
+- build ứng dụng package.json và server.js đơn giản xem 
+# lưu trữ trong container
+#### chia sẻ file giữa host và container 
+- container bản chất là 1 layer trong image vì vậy khi container được xóa đi thì dữ liệu trong container đó cũng sẽ mất đi
+- cần map tất cả các dữ liệu trong container đó vào bộ nhớ trên host
