@@ -261,7 +261,7 @@ docker exec - it <ID container > /bin/bash
     + Khi bạn muốn bật HTTPS nhưng ứng dụng chỉ hỗ trợ HTTP
     + Khi bạn muốn load balancing (cân bằng tải)
     + Khi bạn muốn bảo vệ backend và giấu cổng nội bộ
-- build ứng dụng package.json và server.js đơn giản xem 
+- build ứng dụng package.json và server.js đơn giản xem [tại đây](https://github.com/hoanghung91019999/docker/blob/main/dockerbuild%20nodejs.md)
 # lưu trữ trong container
 #### chia sẻ file giữa host và container 
 - container bản chất là 1 layer trong image vì vậy khi container được xóa đi thì dữ liệu trong container đó cũng sẽ mất đi
