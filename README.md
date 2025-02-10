@@ -266,3 +266,12 @@ docker exec - it <ID container > /bin/bash
 #### chia sẻ file giữa host và container 
 - container bản chất là 1 layer trong image vì vậy khi container được xóa đi thì dữ liệu trong container đó cũng sẽ mất đi
 - cần map tất cả các dữ liệu trong container đó vào bộ nhớ trên host
+- với container không thay đổi chỉ re-deploy
+- chính vì vậy các container chạy database khi xóa container đi sẽ mất đi dữ liệu
+#### persistent data
+- Persistent Data giúp lưu trữ dữ liệu bên trong container mà không bị mất khi container dừng hoặc bị xóa.
+- Nếu không cấu hình Persistent Data, dữ liệu sẽ bị mất khi container bị xóa
+- các phương pháp lưu trữ dữ liệu :
+    + Volume : docker quản lý
+    + bind mount : ổ cứng máy host
+    + tmpfs : RAM ( bộ nhớ tạm ) 
