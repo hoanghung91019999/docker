@@ -207,6 +207,52 @@ docker rmi -f <name:tag> ( buộc xóa khi container vẫn còn)
   |LABEL	|Gán metadata cho image.|
 
 - lưu ý khi build :
+  + docker sẽ tìm và build theo tên file " Dockerfile " theo thư mục chỉ định
   + sắp xếp các layer hợp lý để tối ưu hóa cache khi build
   + vì container chạy bằng quyền admin nên trong code không cần sudo
   + firewall-cmd là lệnh quản lý firewalld, nhưng container thường không chạy dịch vụ nên khi chạy hay báo lỗi nên loại bỏ.
+- tạo 1 docker file đơn giản :
+  + làm việc tại thư mục root
+  + tạo 1 file test.html : vi test.html
+  ```
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Test Nginx</title>
+  </head>
+  <body>
+      <h1>Hello, Nginx is working!</h1>
+  </body>
+  </html>
+  ```
+- tạo Docker file
+```
+vi Dockerfile
+```
+- chỉnh sửa Dockerfile
+```
+FROM nginx
+WORKDIR /usr/share/nginx/html/
+COPY test.html index.html
+EXPOSE 80 443
+```
+- build image
+```
+docker image build -t nginxapp .
+```
+- giải thích :
+  + image có tên nginxapp chạy trên nền nginx
+  + nginx sẽ đọc file html ở /usr/share/nginx/html/ nên WORKDIR chuyển thư mục làm việc vào /usr/share/nginx/html/
+  + COPY sẽ copy file test.html ở thư mục hiện vào thư mục làm việc trong docker ở đây sẽ copy file test.html tới đích là file index.html ( nội dung của index.html sẽ được thay đổi và nginx sẽ ưu tiên đọc index.html)
+  + EXPOSE sẽ document lại cho người dùng biết app sẽ NAT ra ở port bao nhiêu
+- chạy image vừa tạo :
+```
+docker container run -p 80:80 -d nginxapp
+```
+- nếu image đã được build nhưng khi run container không chạy đúng có thể vào container để check
+```
+docker exec - it <ID container > /bin/bash
+```
+- kiểm tra trong thư mục làm việc các file đã được copy hay chưa,...vv
