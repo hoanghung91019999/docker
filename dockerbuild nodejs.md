@@ -51,9 +51,6 @@ EXPOSE 3000
 # Lệnh mặc định khi container chạy
 CMD ["node", "server.js"]
 ```
-
-- chạy container bằng image vừa tạo ra
-```
 - build image:
 ```
 docker image build -t serverapp .
