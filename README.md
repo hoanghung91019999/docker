@@ -274,4 +274,87 @@ docker exec - it <ID container > /bin/bash
 - các phương pháp lưu trữ dữ liệu :
     + Volume : docker quản lý
     + bind mount : ổ cứng máy host
-    + tmpfs : RAM ( bộ nhớ tạm ) 
+    + tmpfs : RAM ( bộ nhớ tạm )
+##### Volume 
+- phương pháp được docker quản lý
+    + nó được docker tạo ra sửa xóa
+    + chỉ nằm trên 1 đường dẫn thư mục duy nhất
+    + bảo mật và quyền truy cập do docker kiểm soát có nghĩa là dữ liệu nằm trong thư mục mà docker quản lý host sẽ không thấy dữ liệu này ngày trừ khi vào đúng thư mục docker quản lý
+- Dữ liệu được lưu trong thư mục /var/lib/docker/volumes/
+- docker không hỗ trợ gắn volume vào container đang chạy
+- Tạo Volume & Gắn vào Container :
+```
+docker volume create < name volume >
+docker run -d -v <name volume>:/data --name my_container nginx
+```
+- Gắn volume <name volume> vào thư mục /data trong container.
+    + thư mục chứa dữ liệu trên host sẽ là /var/lib/docker/volumes/name_volume/_data
+- liệu kê volume
+```
+docker volume ls
+```
+- xem cấu hình chi tiết
+```
+docker volume inspect < name volume >
+```
+- sử dụng muont thay cho -v
+```
+docker run -d --mount type=bind,source=/home/user/data,target=/app/data nginx
+```
+- di chuyển volume giữa các máy chủ bằng cách backup: 
+```
+docker run --rm -v my_volume:/data -v $(pwd):/backup alpine tar czf /backup/my_backup.tar.gz -C /data .
+```
+- Restore dữ liệu từ file backup vào volume mới: 
+```
+docker run --rm -v new_volume:/data -v $(pwd):/backup alpine tar xzf /backup/my_backup.tar.gz -C /data
+```
+- khi nào dùng volume:
+    + khi muốn docker quản lý mà ko cần quan tâm đến thư viện trên host
+    + dữ liệu cần tồn tại lâu dài ngay cả khi container bị xóa
+    + chạy trên nhiều môi trường khác nhau
+- Không dễ chỉnh sửa file từ host (cần docker cp hoặc docker exec).
+- Không trực quan như Bind Mount khi cần truy cập nhanh vào file.
+#### bind mount 
+- Bind Mount là cách gắn một thư mục hoặc file trên host vào container, giúp host và container chia sẻ dữ liệu trực tiếp và đồng bộ ngay lập tức.
+  + Host kiểm soát dữ liệu (Docker không quản lý).
+  + Dữ liệu thay đổi ngay lập tức trên cả host và container.
+  + Có thể dùng để đọc hoặc ghi dữ liệu.
+  + Nguy cơ lỗi do chỉnh sửa file trên host.
+- câu lệnh :
+```
+docker run -v /path/on/host:/path/in/container IMAGE
+```
+- sử dụng muont
+```
+docker run --mount type=bind,source=/path/on/host,target=/path/in/container IMAGE
+```
+- ví dụ : Gắn thư mục web vào container Nginx để có thể chỉnh sửa file trên host mà không cần rebuild container:
+```
+docker run -d --name my_nginx -v $(pwd)/html:/usr/share/nginx/html -p 8080:80 nginx
+```
+- vì dữ liệu giữa host và container sẽ được đồng bộ nên thư mục trên host cần có quyền
+```
+sudo chmod -R 777 /home/user/data
+```
+- khi nào dùng bind muont:
+  + Khi cần đồng bộ file giữa host và container ngay lập tức.
+  + Khi làm development, giúp sửa code mà không cần rebuild container.
+  +  Khi chạy web server, giúp cập nhật file mà không cần restart container.
+  +  Khi muốn log file ra host để dễ đọc.
+  +  Khi làm backup hoặc restore dữ liệu từ container ra host.
+#### docker cp và docker commit
+- có thể đưa dữ liệu từ host vào container đang chạy băng docker cp
+```
+docker cp /home/user/data my_container:/app/data
+```
+- đưa dữ liệu từ container ra mà chưa muont
+```
+docker cp my_container:/app/data /home/user/data_backup
+```
+- sử dụng docker commit để tạo image mới với toàn bộ trạng thái của container đang chạy
+```
+docker commit my_container my_backup_image
+```
+- tạo volume
+- chạy lại container mới với image vừa tạo
