@@ -358,3 +358,90 @@ docker commit my_container my_backup_image
 ```
 - tạo volume
 - chạy lại container mới với image vừa tạo
+# docker-compose
+#### vì sao cần tự động hóa 
+- môi trường có nhiều container
+- chuẩn hóa môi trường
+- mô tả lại toàn hệ thống trong 1 file
+#### sử dụng
+- file mô tả bằng YAML
+- CLI docker-compose
+#### viết docker-compose.yml
+- chủ yếu dùng trong test/dev. môi trường prod thường dùng stack, k8s
+- đặt tên là docker-compose.yml. nếu muốn sử dụng tên khác thì cần dùng option
+```
+docker-compose -f <filename>
+```
+- 2 câu lệnh :
+```
+docker-compose up -d
+docker-compose downd
+```
+- Xem logs
+```
+docker compose logs -f
+```
+- Xem danh sách container
+```
+docker compose ps
+```
+- Restart một service
+```
+docker compose restart web
+```
+#### cách viết file mô tả
+- template :
+```
+version: "3.8" #Xác định phiên bản YAML cho Docker Compose. Phiên bản mới nhất thường là 3.8.
+
+services: # Trong services, bạn định nghĩa từng container ứng dụng.
+  nginx: #name container cũng như DNS name để giao tiếp với các container khác
+    image: nginx # image
+    ports: # port NAT
+      - "8080:80"
+    volumes: # cấu hình volume cho container
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www/html
+    depends_on:  # tùy chọn dùng để xác định thứ tự khởi động các services.ở đây nginx sẽ chỉ được bắt đầu khi php khởi động
+      - php
+    networks: # cấu hình mạng cho container kết nối vào mạng nào
+      - app_network
+
+  php:
+    build: # Tự build image từ Dockerfile
+      context: . # Thư mục chứa Dockerfile
+      dockerfile: Dockerfile  # Tên file Dockerfile . sau khi build xong sẽ run container luôn
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - app_network
+
+  db:
+    image: mysql:5.7
+    environment: Thiết lập biến môi trường
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - app_network
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes: # create volume. nếu không tạo ở đây các cấu hình volume bên trên sẽ không tìm thấy 
+  db_data:
+
+networks: # create network. nếu không tạo ở đây các cấu hình network bên trên sẽ không tìm thấy 
+  app_network: #name volume
+    driver:  # kiểu mạng
+```
+- lưu ý :
+    + Dùng .env Để Quản Lý Biến Môi Trường
+    ```
+    services:
+      db:
+        image: mysql
+        environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+        env_file:
+        - .env
+    ```
+    + tạo file .env : MYSQL_PASSWORD=supersecret
+- Dùng "restart: unless-stopped" để container tự chạy lại khi bị lỗi.
