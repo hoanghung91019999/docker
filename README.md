@@ -200,7 +200,6 @@ docker network disconnect <name network> < container >
     + tiết kiệm bộ nhớ
     + tiết kiệm thời gian pull push
 - containeer là một layer của image
--  ![image](https://github.com/user-attachments/assets/5c39f370-e4a8-4bf8-8d88-fb519b537581)
 - kiểm bằng bằng :
 ```
 docker image inspect
@@ -301,6 +300,63 @@ docker exec - it <ID container > /bin/bash
     + Khi bạn muốn load balancing (cân bằng tải)
     + Khi bạn muốn bảo vệ backend và giấu cổng nội bộ
 - build ứng dụng package.json và server.js đơn giản xem [tại đây](https://github.com/hoanghung91019999/docker/blob/main/dockerbuild%20nodejs.md)
+#### tối ưu hóa docker file
+- Dùng Base Image Nhỏ Gọn :
+    + Không nên dùng image lớn như ubuntu hoặc debian nếu không cần thiết.
+    + dùng Alpine (~5MB), hoặc Slim versions (debian:slim).
+- Dùng Multi-Stage Build để giảm kích thước Image
+    + sử dụng một stage để build ứng dụng (có thể chứa nhiều dependency, công cụ build, file tạm, v.v.) và sau đó chỉ copy các file cần thiết sang một stage khác để tạo Image cuối cùng.
+    ```
+    # Stage 1: Build
+    FROM golang:1.20 AS builder
+    WORKDIR /app
+    COPY . .
+    RUN go build -o myapp
+
+    # Stage 2: Runtime (Chỉ giữ lại binary)
+    FROM alpine:latest
+    WORKDIR /root/
+    COPY --from=builder /app/myapp .
+    CMD ["./myapp"]
+    ```
+    + Cách hoạt động của Multi-Stage Build
+    + Stage 1 (Builder Stage)
+    + Dùng một Image lớn (ví dụ: golang, node, maven, v.v.) để build code.
+    + Cài đặt tất cả dependency, compile code, chạy test, v.v.
+    + Kết quả của stage này có thể tạo ra một binary hoặc thư mục chứa ứng dụng đã sẵn sàng chạy.
+    + Stage 2 (Final Stage)
+
+    + Dùng một Image nhẹ hơn (ví dụ: alpine, scratch, v.v.).
+    + Chỉ copy những file cần thiết từ stage 1 sang (ví dụ: chỉ copy binary đã build, không mang theo source code hay công cụ build).
+    + Giảm thiểu kích thước Image cuối cùng.
+- Giảm số lượng Layers (RUN kết hợp nhiều lệnh)
+    + Mỗi lệnh RUN tạo một layer mới, nên nên gộp nhiều lệnh lại.
+    + Sử dụng && để giảm số lượng layers.
+- Luôn sử dụng .dockerignore
+    + tạo file .dockerignore
+    + Điền vào file .dockerignore những file/thư mục cần bỏ qua
+- Không chạy container với quyền root
+    + Mặc định, container chạy với quyền root, gây rủi ro bảo mật.
+    + Nên tạo user không phải root để chạy app.
+    ```
+    RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+    USER appuser
+    ```
+- Sử dụng Cache hiệu quả (Đặt lệnh COPY trước khi RUN)
+    + Docker cache từng layer, nếu một layer thay đổi, các layer sau bị build lại.
+    + Đặt lệnh COPY trước RUN để tận dụng cache.
+- Định nghĩa CMD và ENTRYPOINT đúng cách
+    + CMD có thể bị override khi chạy docker run.
+    + ENTRYPOINT không bị override trừ khi dùng --entrypoint.
+- Không lưu dữ liệu trong container (Dùng Volume)
+- Luôn đặt phiên bản cụ thể cho base image
+    + FROM node:20.4-alpine
+- Dọn dẹp file tạm sau khi cài đặt package
+    + Sau khi cài package, nên xóa các file cache để giảm kích thước image.
+    ```
+    RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+    ```
+
 # lưu trữ trong container
 #### chia sẻ file giữa host và container 
 - container bản chất là 1 layer trong image vì vậy khi container được xóa đi thì dữ liệu trong container đó cũng sẽ mất đi
