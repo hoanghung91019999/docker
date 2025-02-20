@@ -8,7 +8,46 @@ sudo dnf install -y docker-ce docker-ce-cli containerd.io
 sudo systemctl start docker
 sudo systemctl enable docker
 ```
-## sử dụng docker thế nào 
+## docker là gì ?
+- Docker là một nền tảng mã nguồn mở giúp đóng gói, phân phối và chạy ứng dụng trong các container. Container giúp đảm bảo rằng ứng dụng có thể chạy đồng nhất trên mọi môi trường (máy cá nhân, server, cloud...).
+#### thành phần kiến trúc của docker 
+![image](https://github.com/user-attachments/assets/edcfc7b8-49d6-4b1a-8fce-4861e9a60bf5)
+- Docker sử dụng kiến trúc client-server. Docker client sẽ liên lạc với các Docker daemon, các Docker daemon sẽ thực hiện các tác vụ build, run và distribuing các Docker container
+- Docker gồm :
+- Docker Engine : Là phần mềm chính của Docker, bao gồm:
+    + Docker Daemon: Quản lý container, image và volume.
+    + Docker CLI (Command-Line Interface): Công cụ dòng lệnh để thao tác với Docker.
+    + REST API: Cho phép giao tiếp với Docker Daemon.
+- ![image](https://github.com/user-attachments/assets/1a1db856-d350-402c-a822-3f2b333b03c7)
+
+- Docker Registry : Kho lưu trữ Docker Image (VD: Docker Hub, AWS ECR, GitHub Container Registry).Khi chạy container, nếu image chưa có trên máy, Docker sẽ tải từ registry.
+- docker object bao gồm : 
+    + Docker Image : Là một tệp chứa mã nguồn, thư viện, môi trường và tất cả các cài đặt cần thiết để chạy ứng dụng.
+    + Docker Container : Là một instance của Docker Image đang chạy.Hoạt động độc lập, nhẹ, chia sẻ kernel với hệ điều hành host.Dễ dàng di chuyển giữa các môi trường (dev, test, production).
+    + Docker Volume : Dùng để lưu trữ dữ liệu bên ngoài container, tránh mất dữ liệu khi container bị xóa.
+    + Docker Network : Quản lý cách các container giao tiếp với nhau hoặc với bên ngoài.
+### cơ chế hoạt động
+- Khi chạy một container (docker run), Docker Client gửi lệnh đến Docker Daemon.
+- Docker Daemon kiểm tra xem image có sẵn chưa nếu chưa có, nó kéo image từ Docker Registry.
+- Docker Daemon tạo container từ image và thiết lập:
+    + Namespace (cách ly tài nguyên như PID, Network, File System...).
+    + Cgroups (giới hạn CPU, RAM, I/O...).
+- Container chạy với môi trường riêng biệt nhưng dùng chung Kernel với Host.(  với các hđh khác docker sử dụng công nghệ ảo hóa môi trường để tạo môi trường )
+### tại sao nên sử dụng docker
+- Chạy đồng nhất trên mọi môi trường
+- Nhẹ hơn so với Virtual Machine (VM)
+- Dễ dàng scale và triển khai
+- Quản lý và rollback dễ dàng
+- Dễ dàng chia sẻ & CI/CD
+### khi nào nên sử dụng docker
+-  Khi cần môi trường đồng nhất giữa DEV - TEST - PROD
+-  Khi cần triển khai nhanh & tự động
+-  Khi làm việc với microservices
+-  Khi muốn tiết kiệm tài nguyên hơn so với VM
+-  khi cần CI/CD tự động
+### so sánh docker và VM
+
+## Docker container 
 - câu lệnh :
 ```
 docker info
@@ -161,7 +200,7 @@ docker network disconnect <name network> < container >
     + tiết kiệm bộ nhớ
     + tiết kiệm thời gian pull push
 - containeer là một layer của image
--  ![Uploading image.png…]()
+-  ![image](https://github.com/user-attachments/assets/5c39f370-e4a8-4bf8-8d88-fb519b537581)
 - kiểm bằng bằng :
 ```
 docker image inspect
